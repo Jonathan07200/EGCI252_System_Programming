@@ -1,6 +1,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <time.h>
 
 #define THREADS 5   //Easily changeable for single vs 5 threads comparasion
 #define RANGE 10000 //50 000 numbers, 10 000 per threads
@@ -28,18 +29,27 @@ void* compute_prime(void* arg)
         return NULL;
 }
 
+
 int main(void) {
     pthread_t thread[THREADS];
 
     puts("Ranging from 1-50000: concurrently ");
 
-    for (int i = 0; i < 5; ++i) {
+    clock_t start = clock();
+
+    for (int i = 0; i < THREADS; ++i) {
         pthread_create(&thread[i], NULL, compute_prime, (void*)(intptr_t)i);
         
     }
-    for (int i = 0; i < 5; ++i) { 
+    for (int i = 0; i < THREADS; ++i) { 
         pthread_join(thread[i], NULL);
     }
+
+    clock_t end = clock();
+    double elapsed = (double)(end - start) / CLOCKS_PER_SEC;
+
+    printf("\nExecution time: %.2f seconds\n", elapsed);
+
 
     return 0;
 }
